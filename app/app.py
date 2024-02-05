@@ -1,4 +1,39 @@
+import pandas as pd
+import time
+import os
+
+
+def chech_file(
+    path: str
+) -> str:
+    columns = [
+        "id",
+        "title",
+        "body",
+        "create_date",
+        "edit_date",
+    ]
+    data_path = f"{path}/notes.csv"
+    if not os.path.exists(path):
+        os.makedirs(path)
+    if not os.path.exists(data_path):
+        df = pd.DataFrame(
+            columns=columns
+        )
+        df.to_csv(
+            data_path,
+            sep=';',
+            index=True,
+            encoding='utf-8',
+        )
+
+    return data_path
+
+
 def main() -> None:
+    data_path = chech_file(
+        path="./data/"
+    )
     while True:
         command = input("command: ")
         match command:
