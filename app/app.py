@@ -1,32 +1,33 @@
 import pandas as pd
 import time
-import os
+import os, json
+
+from commands import show_all_notes
 
 
-def chech_file(
+def check_file(
     path: str
-) -> str:
-    columns = [
-        "id",
-        "title",
-        "body",
-        "create_date",
-        "edit_date",
-    ]
-    data_path = f"{path}/notes.json"
+) -> None:
+    dirname = os.path.dirname(path)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname, exist_ok=True)
     if not os.path.exists(path):
-        os.makedirs(path)
-    if not os.path.exists(data_path):
-        with open(data_path, "w", encoding="utf-8"):
-            pass
-
-    return data_path
+        with open(path, "w", encoding="utf-8") as json_file:
+            json.dump(
+                {"data": []},
+                json_file,
+                ensure_ascii=False,
+                indent=4
+            )
 
 
 def main() -> None:
-    data_path = chech_file(
-        path="./final_work/data",
+    main_path = "./app/data/notes.json"
+
+    check_file(
+        path=main_path,
     )
+
     while True:
         command = input("command: ")
         match command:
@@ -40,7 +41,22 @@ def main() -> None:
             case "/delete":
                 ...
             case "/show_all":
-                ...
+                notes = show_all_notes(
+                    data_path=main_path
+                )
+                if len(notes) != 0:
+                    for note in notes:
+                        title = note["title"]
+                        body = note["body"]
+                        create_date = note["created_date"]
+                        edit_date = note["edit_date"]
+                        print(title)
+                        print(f"Заметка была создана {create_date} числа.")
+                        print(f"Последнее редактирование {edit_date} числа.\n")
+                        print(body)
+                        print("\n\n\n")
+                else:
+                    print("Пока что нет заметок")
             case "/show_note":
                 ...
             case _:
