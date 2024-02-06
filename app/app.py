@@ -32,7 +32,7 @@ def chech_file(
 
 def main() -> None:
     data_path = chech_file(
-        path="./data/"
+        path="./data/",
     )
     while True:
         command = input("command: ")
@@ -46,7 +46,7 @@ def main() -> None:
                 ...
             case "/delete":
                 ...
-            case "/show":
+            case "/show_all":
                 ...
             case "/show_note":
                 ...
@@ -60,6 +60,6 @@ if __name__ == "__main__":
 - Если хотите добавить заметку, введите /add
 - Если хотите редактировать заметку, введите /edit
 - Если хотите удалить заметку, введите /delete
-- Если хотите посмотреть все заметки, введите /show
+- Если хотите посмотреть все заметки, введите /show_all
 - Если хотите посмотреть заметку, введите /show_note''')
     main()
