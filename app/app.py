@@ -2,7 +2,11 @@ import pandas as pd
 import time
 import os, json
 
-from commands import show_all_notes, show_one_note
+from commands import (
+    show_all_notes,
+    show_one_note,
+    add_note,
+)
 
 
 def check_file(
@@ -37,7 +41,7 @@ def output_note_text(
 
 
 def main() -> None:
-    main_path = "final_work/app/data/notes.json"
+    main_path = "./app/data/notes.json"
 
     check_file(
         path=main_path,
@@ -50,7 +54,10 @@ def main() -> None:
                 print("До встречи!")
                 break
             case "/add":
-                ...
+                add_note(
+                    data_path=main_path,
+                )
+                print("Новая заметка добавлена!")
             case "/edit":
                 ...
             case "/delete":
