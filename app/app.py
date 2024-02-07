@@ -2,7 +2,7 @@ import pandas as pd
 import time
 import os, json
 
-from commands import show_all_notes
+from commands import show_all_notes, show_one_note
 
 
 def check_file(
@@ -21,8 +21,23 @@ def check_file(
             )
 
 
+def output_note_text(
+    note: dict,
+) -> None:
+    title = note["title"]
+    body = note["body"]
+    create_date = note["created_date"]
+    edit_date = note["edit_date"]
+
+    print(title)
+    print(f"Заметка была создана {create_date} числа.")
+    print(f"Последнее редактирование {edit_date} числа.\n")
+    print(body)
+    print("\n\n\n")
+
+
 def main() -> None:
-    main_path = "./app/data/notes.json"
+    main_path = "final_work/app/data/notes.json"
 
     check_file(
         path=main_path,
@@ -46,19 +61,27 @@ def main() -> None:
                 )
                 if len(notes) != 0:
                     for note in notes:
-                        title = note["title"]
-                        body = note["body"]
-                        create_date = note["created_date"]
-                        edit_date = note["edit_date"]
-                        print(title)
-                        print(f"Заметка была создана {create_date} числа.")
-                        print(f"Последнее редактирование {edit_date} числа.\n")
-                        print(body)
-                        print("\n\n\n")
+                        output_note_text(
+                            note=note
+                        )
                 else:
                     print("Пока что нет заметок")
             case "/show_note":
-                ...
+                print("Введите через что вы хотите найти заметку: id/title")
+                while True:
+                    find_by = input("По ")
+                    if find_by in ("id", "title", "/exit"):
+                        note = show_one_note(
+                            data_path=main_path,
+                            find_by=find_by,
+                        )
+                        if note is not None:
+                            output_note_text(
+                                note=note,
+                            )
+                            break
+                    else:
+                        print("Вы возможно ошиблись с командой")
             case _:
                 print("Вы ввели не существующую комманду!")
 
