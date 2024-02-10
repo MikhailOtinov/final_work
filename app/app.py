@@ -6,6 +6,7 @@ from commands import (
     show_all_notes,
     show_one_note,
     add_note,
+    edit_note,
 )
 
 
@@ -59,7 +60,18 @@ def main() -> None:
                 )
                 print("Новая заметка добавлена!")
             case "/edit":
-                ...
+                print("Введите через что вы хотите найти заметку для редактирования: id/title")
+                while True:
+                    # TODO: Переделать с exit (break)
+                    find_by = input("По ")
+                    if find_by in ("id", "title", "exit"):
+                        note = edit_note(
+                            data_path=main_path,
+                            find_by=find_by,
+                        )
+                        break
+                    else:
+                        print("Вы возможно ошиблись с командой")
             case "/delete":
                 ...
             case "/show_all":
@@ -74,10 +86,12 @@ def main() -> None:
                 else:
                     print("Пока что нет заметок")
             case "/show_note":
+                # TODO: Добавить запятую
                 print("Введите через что вы хотите найти заметку: id/title")
                 while True:
+                    # TODO: Переделать с exit (break)
                     find_by = input("По ")
-                    if find_by in ("id", "title", "/exit"):
+                    if find_by in ("id", "title", "exit"):
                         note = show_one_note(
                             data_path=main_path,
                             find_by=find_by,
