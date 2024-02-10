@@ -7,6 +7,7 @@ from commands import (
     show_one_note,
     add_note,
     edit_note,
+    delete_note,
 )
 
 
@@ -29,12 +30,13 @@ def check_file(
 def output_note_text(
     note: dict,
 ) -> None:
+    id_ = note["id"]
     title = note["title"]
     body = note["body"]
     create_date = note["created_date"]
     edit_date = note["edit_date"]
 
-    print(title)
+    print(f"{id_}. {title}")
     print(f"Заметка была создана {create_date} числа.")
     print(f"Последнее редактирование {edit_date} числа.\n")
     print(body)
@@ -73,7 +75,18 @@ def main() -> None:
                     else:
                         print("Вы возможно ошиблись с командой")
             case "/delete":
-                ...
+                print("Введите через что вы хотите удалить заметку: id/title")
+                while True:
+                    # TODO: Переделать с exit (break)
+                    find_by = input("По ")
+                    if find_by in ("id", "title", "exit"):
+                        delete_note(
+                            data_path=main_path,
+                            find_by=find_by,
+                        )
+                        break
+                    else:
+                        print("Вы возможно ошиблись с командой")
             case "/show_all":
                 notes = show_all_notes(
                     data_path=main_path

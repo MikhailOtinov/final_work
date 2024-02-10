@@ -112,3 +112,38 @@ def edit_note(
                     print("Неверный параметр редактирования")
         if not note_found:
             print("Заметка не найдена")
+
+
+def delete_note(
+    data_path: str,
+    find_by: str,
+) -> None:
+    with open(data_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    if find_by == "id":
+        id_ = input("Введите id: ")
+        if id_.isdigit():
+            note_found = False
+            for note in data["data"]:
+                if note.get("id") == int(id_):
+                    note_found = True
+                    print(note)
+                    data["data"].remove(note)
+                    with open(data_path, "w", encoding="utf-8") as file:
+                        json.dump(data, file, ensure_ascii=False, indent=4)
+            if not note_found:
+                print("Заметка не найдена")
+        else:
+            print("Неверный формат id")
+    elif find_by == "title":
+        title_ = input("Введите title: ")
+        note_found = False
+        for note in data["data"]:
+            if note.get("title") == title_:
+                note_found = True
+                data["data"].remove(note)
+                with open(data_path, "w", encoding="utf-8") as file:
+                    json.dump(data, file, ensure_ascii=False, indent=4)
+        if not note_found:
+            print("Заметка не найдена")
