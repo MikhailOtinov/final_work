@@ -16,10 +16,16 @@ def find_all_id_title(
 
 def show_all_notes(
     data_path: str,
+    by_date: bool,
 ) -> dict:
     with open(data_path, "r", encoding="utf-8") as file:
         data = json.load(file)
-    return data["data"]
+    if by_date:
+        date = input("Введите дату в формате дд.мм.гггг: ")
+        data = [notes for notes in data["data"] if notes["created_date"] == date]
+        return data
+    else:
+        return data["data"]
 
 
 def show_one_note(
@@ -85,6 +91,7 @@ def add_note(
 
     with open(data_path, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
+    print("Заметка добавлена")
 
 
 def edit_note(
@@ -167,6 +174,7 @@ def delete_note(
                     data["data"].remove(note)
                     with open(data_path, "w", encoding="utf-8") as file:
                         json.dump(data, file, ensure_ascii=False, indent=4)
+                    print("Заметка удалена")
             if not note_found:
                 print("Заметка не найдена")
         else:
@@ -185,5 +193,6 @@ def delete_note(
                 data["data"].remove(note)
                 with open(data_path, "w", encoding="utf-8") as file:
                     json.dump(data, file, ensure_ascii=False, indent=4)
+                print("Заметка удалена")
         if not note_found:
             print("Заметка не найдена")

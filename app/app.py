@@ -11,6 +11,15 @@ from commands import (
 )
 
 
+help_text = '''Добро пожаловать в "Мои заметки"
+- Если хотите выйти, введите /exit
+- Если хотите добавить заметку, введите /add
+- Если хотите редактировать заметку, введите /edit
+- Если хотите удалить заметку, введите /delete
+- Если хотите посмотреть все заметки, введите /show_all
+- Если хотите посмотреть заметку, введите /show_note'''
+
+
 def check_file(
     path: str
 ) -> None:
@@ -50,8 +59,7 @@ def output_note_text(
     print(f"{id_}. {title}")
     print(f"Заметка была создана {create_date} числа.")
     print(f"Последнее редактирование {edit_date} числа.\n")
-    print(body)
-    print("\n\n\n")
+    print(f"{body}\n")
 
 
 def main() -> None:
@@ -62,6 +70,9 @@ def main() -> None:
     )
 
     while True:
+        if not os.path.exists(main_path):
+            print("ФАЙЛ НЕ НАЙДЕН. Перезапустите программу")
+            break
         renumber_ids(
             data_path=main_path
         )
@@ -78,7 +89,7 @@ def main() -> None:
             case "/edit":
                 print("Введите через что вы хотите найти заметку для редактирования (exit - отмена): id/title")
                 while True:
-                    find_by = input("По ")
+                    find_by = input()
                     if find_by in ("id", "title", "exit"):
                         note = edit_note(
                             data_path=main_path,
@@ -90,7 +101,7 @@ def main() -> None:
             case "/delete":
                 print("Введите через что вы хотите удалить заметку (exit - отмена): id/title")
                 while True:
-                    find_by = input("По ")
+                    find_by = input()
                     if find_by in ("id", "title", "exit"):
                         delete_note(
                             data_path=main_path,
@@ -100,9 +111,19 @@ def main() -> None:
                     else:
                         print("Вы возможно ошиблись с командой")
             case "/show_all":
-                notes = show_all_notes(
-                    data_path=main_path
-                )
+                date_by = input("Введите 'да', если хотите вывести записки по дате создания или 'нет': ")
+                if date_by == "да":
+                    notes = show_all_notes(
+                        data_path=main_path,
+                        by_date=True,
+                    )
+                elif date_by == "нет":
+                    notes = show_all_notes(
+                        data_path=main_path,
+                        by_date=False,
+                    )
+                else:
+                    print("Вы возможно ошиблись с командой")
                 if len(notes) != 0:
                     for note in notes:
                         output_note_text(
@@ -113,7 +134,7 @@ def main() -> None:
             case "/show_note":
                 print("Введите через что вы хотите найти заметку (exit - отмена): id/title")
                 while True:
-                    find_by = input("По ")
+                    find_by = input()
                     if find_by in ("id", "title", "exit"):
                         note = show_one_note(
                             data_path=main_path,
@@ -126,16 +147,11 @@ def main() -> None:
                             break
                     else:
                         print("Вы возможно ошиблись с командой")
+            case "/help":
+                print(help_text)
             case _:
                 print("Вы ввели не существующую комманду!")
 
 if __name__ == "__main__":
-    print(
-'''Добро пожаловать в "Мои заметки"
-- Если хотите выйти, введите /exit
-- Если хотите добавить заметку, введите /add
-- Если хотите редактировать заметку, введите /edit
-- Если хотите удалить заметку, введите /delete
-- Если хотите посмотреть все заметки, введите /show_all
-- Если хотите посмотреть заметку, введите /show_note''')
+    print(help_text)
     main()
