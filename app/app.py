@@ -1,5 +1,3 @@
-import pandas as pd
-import time
 import os, json
 
 from commands import (
@@ -8,6 +6,8 @@ from commands import (
     add_note,
     edit_note,
     delete_note,
+    open_file,
+    save_file,
 )
 
 
@@ -39,12 +39,15 @@ def check_file(
 def renumber_ids(
     data_path: str,
 ) -> None:
-    with open(data_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-    for index, item in enumerate(data["data"], start=1):
+    data = open_file(
+        data_path=data_path,
+    )
+    for index, item in enumerate(data, start=1):
         item["id"] = index
-    with open(data_path, "w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
+    save_file(
+        data_path=data_path,
+        data=data,
+    )
 
 
 def output_note_text(

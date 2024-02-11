@@ -3,38 +3,55 @@ import time
 from datetime import datetime
 
 
+def open_file(
+    data_path: str,
+) -> list[dict]:
+    with open(data_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data["data"]
+
+
+def save_file(
+    data_path: str,
+    data: list[dict],
+) -> None:
+    data = {"data": data}
+    with open(data_path, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
+
 def find_all_id_title(
     by: str,
     data_path: str,
 ) -> list[str]|list[int]:
-    with open(data_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
+    data = open_file(
+        data_path=data_path
+    )
     if by == "id":
-        return [note["id"] for note in data["data"]]
-    return [note["title"] for note in data["data"]]
+        return [note["id"] for note in data]
+    return [note["title"] for note in data]
 
 
 def show_all_notes(
     data_path: str,
     by_date: bool,
-) -> dict:
-    with open(data_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
+) -> list[dict]:
+    data = open_file(
+        data_path=data_path
+    )
     if by_date:
         date = input("Введите дату в формате дд.мм.гггг: ")
-        data = [notes for notes in data["data"] if notes["created_date"] == date]
-        return data
-    else:
-        return data["data"]
+        data = [notes for notes in data if notes["created_date"] == date]
+    return data
 
 
 def show_one_note(
     data_path: str,
     find_by: str,
 ) -> dict | None:
-    with open(data_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-
+    data = open_file(
+        data_path=data_path
+    )
     if find_by == "id":
         ids = find_all_id_title(
             by="id",
@@ -43,7 +60,7 @@ def show_one_note(
         print(f"Существующие id: {ids}")
         id_ = input("Введите id: ")
         if id_.isdigit():
-            for note in data["data"]:
+            for note in data:
                 if note["id"] == int(id_):
                     return note
             # Если цикл завершился и мы здесь, значит заметка не найдена
@@ -57,7 +74,7 @@ def show_one_note(
         )
         print(f"Существующие title: {titles}")
         title_ = input("Введите title: ")
-        for note in data["data"]:
+        for note in data:
             if note["title"] == title_:
                 return note
         # Если цикл завершился и мы здесь, значит заметка не найдена
@@ -69,17 +86,20 @@ def show_one_note(
 def add_note(
     data_path: str,
 ) -> None:
-    with open(data_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
-        id_ = max([note["id"] for note in data["data"]]) + 1
-        title = input("Название заметки: ")
-        titles = [note["title"] for note in data["data"]]
-        if title in titles:
-            count_title = titles.count(title)
-            title += f" ({count_title})"
-        body = input("Напишите заметку: ")
-        create_date = datetime.fromtimestamp(time.time()).strftime("%d.%m.%Y")
-        edit_date = create_date
+    data = open_file(
+        data_path=data_path
+    )
+
+    id_ = max([note["id"] for note in data]) + 1
+    title = input("Название заметки: ")
+    titles = [note["title"] for note in data]
+    if title in titles:
+        count_title = titles.count(title)
+        title += f" ({count_title})"
+    body = input("Напишите заметку: ")
+    create_date = datetime.fromtimestamp(time.time()).strftime("%d.%m.%Y")
+    edit_date = create_date
+
     new_note = {
         "id": id_,
         "title": title,
@@ -87,10 +107,12 @@ def add_note(
         "created_date": create_date,
         "edit_date": edit_date,
     }
-    data["data"].append(new_note)
+    data.append(new_note)
 
-    with open(data_path, "w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
+    save_file(
+        data_path=data_path,
+        data=data,
+    )
     print("Заметка добавлена")
 
 
@@ -98,8 +120,9 @@ def edit_note(
     data_path: str,
     find_by: str,
 ) -> None:
-    with open(data_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
+    data = open_file(
+        data_path=data_path
+    )
 
     if find_by == "id":
         ids = find_all_id_title(
@@ -110,15 +133,17 @@ def edit_note(
         id_ = input("Введите id: ")
         if id_.isdigit():
             note_found = False
-            for note in data["data"]:
+            for note in data:
                 if note.get("id") == int(id_):
                     note_found = True
                     edit = input("Введите, что вы хотите редактировать (title/body): ")
                     if edit in ("title", "body"):
                         note[edit] = input("Новый текст: ")
                         note["edit_date"] = datetime.fromtimestamp(time.time()).strftime("%d.%m.%Y")
-                        with open(data_path, "w", encoding="utf-8") as file:
-                            json.dump(data, file, ensure_ascii=False, indent=4)
+                        save_file(
+                            data_path=data_path,
+                            data=data,
+                        )
                         print("Заметка отредактирована")
                         break
                     else:
@@ -135,15 +160,17 @@ def edit_note(
         print(f"Существующие title: {titles}")
         title_ = input("Введите title: ")
         note_found = False
-        for note in data["data"]:
+        for note in data:
             if note.get("title") == title_:
                 note_found = True
                 edit = input("Введите, что вы хотите редактировать (title/body): ")
                 if edit in ("title", "body"):
                     note[edit] = input("Новый текст: ")
                     note["edit_date"] = datetime.fromtimestamp(time.time()).strftime("%d.%m.%Y")
-                    with open(data_path, "w", encoding="utf-8") as file:
-                        json.dump(data, file, ensure_ascii=False, indent=4)
+                    save_file(
+                        data_path=data_path,
+                        data=data,
+                    )
                     print("Заметка отредактирована")
                     break
                 else:
@@ -156,8 +183,9 @@ def delete_note(
     data_path: str,
     find_by: str,
 ) -> None:
-    with open(data_path, "r", encoding="utf-8") as file:
-        data = json.load(file)
+    data = open_file(
+        data_path=data_path
+    )
 
     if find_by == "id":
         ids = find_all_id_title(
@@ -168,12 +196,14 @@ def delete_note(
         id_ = input("Введите id: ")
         if id_.isdigit():
             note_found = False
-            for note in data["data"]:
+            for note in data:
                 if note.get("id") == int(id_):
                     note_found = True
-                    data["data"].remove(note)
-                    with open(data_path, "w", encoding="utf-8") as file:
-                        json.dump(data, file, ensure_ascii=False, indent=4)
+                    data.remove(note)
+                    save_file(
+                        data_path=data_path,
+                        data=data,
+                    )
                     print("Заметка удалена")
             if not note_found:
                 print("Заметка не найдена")
@@ -187,12 +217,14 @@ def delete_note(
         print(f"Существующие title: {titles}")
         title_ = input("Введите title: ")
         note_found = False
-        for note in data["data"]:
+        for note in data:
             if note.get("title") == title_:
                 note_found = True
-                data["data"].remove(note)
-                with open(data_path, "w", encoding="utf-8") as file:
-                    json.dump(data, file, ensure_ascii=False, indent=4)
+                data.remove(note)
+                save_file(
+                    data_path=data_path,
+                    data=data,
+                )
                 print("Заметка удалена")
         if not note_found:
             print("Заметка не найдена")
