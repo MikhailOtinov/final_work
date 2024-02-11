@@ -27,6 +27,17 @@ def check_file(
             )
 
 
+def renumber_ids(
+    data_path: str,
+) -> None:
+    with open(data_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    for index, item in enumerate(data["data"], start=1):
+        item["id"] = index
+    with open(data_path, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
+
 def output_note_text(
     note: dict,
 ) -> None:
@@ -51,6 +62,9 @@ def main() -> None:
     )
 
     while True:
+        renumber_ids(
+            data_path=main_path
+        )
         command = input("command: ")
         match command:
             case "/exit":
@@ -62,9 +76,8 @@ def main() -> None:
                 )
                 print("Новая заметка добавлена!")
             case "/edit":
-                print("Введите через что вы хотите найти заметку для редактирования: id/title")
+                print("Введите через что вы хотите найти заметку для редактирования (exit - отмена): id/title")
                 while True:
-                    # TODO: Переделать с exit (break)
                     find_by = input("По ")
                     if find_by in ("id", "title", "exit"):
                         note = edit_note(
@@ -75,9 +88,8 @@ def main() -> None:
                     else:
                         print("Вы возможно ошиблись с командой")
             case "/delete":
-                print("Введите через что вы хотите удалить заметку: id/title")
+                print("Введите через что вы хотите удалить заметку (exit - отмена): id/title")
                 while True:
-                    # TODO: Переделать с exit (break)
                     find_by = input("По ")
                     if find_by in ("id", "title", "exit"):
                         delete_note(
@@ -99,10 +111,8 @@ def main() -> None:
                 else:
                     print("Пока что нет заметок")
             case "/show_note":
-                # TODO: Добавить запятую
-                print("Введите через что вы хотите найти заметку: id/title")
+                print("Введите через что вы хотите найти заметку (exit - отмена): id/title")
                 while True:
-                    # TODO: Переделать с exit (break)
                     find_by = input("По ")
                     if find_by in ("id", "title", "exit"):
                         note = show_one_note(

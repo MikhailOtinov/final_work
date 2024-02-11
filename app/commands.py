@@ -3,6 +3,17 @@ import time
 from datetime import datetime
 
 
+def find_all_id_title(
+    by: str,
+    data_path: str,
+) -> list[str]|list[int]:
+    with open(data_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    if by == "id":
+        return [note["id"] for note in data["data"]]
+    return [note["title"] for note in data["data"]]
+
+
 def show_all_notes(
     data_path: str,
 ) -> dict:
@@ -19,6 +30,11 @@ def show_one_note(
         data = json.load(file)
 
     if find_by == "id":
+        ids = find_all_id_title(
+            by="id",
+            data_path=data_path
+        )
+        print(f"Существующие id: {ids}")
         id_ = input("Введите id: ")
         if id_.isdigit():
             for note in data["data"]:
@@ -29,6 +45,11 @@ def show_one_note(
         else:
             print("Неверный формат id")
     elif find_by == "title":
+        titles = find_all_id_title(
+            by="title",
+            data_path=data_path
+        )
+        print(f"Существующие title: {titles}")
         title_ = input("Введите title: ")
         for note in data["data"]:
             if note["title"] == title_:
@@ -74,6 +95,11 @@ def edit_note(
         data = json.load(file)
 
     if find_by == "id":
+        ids = find_all_id_title(
+            by="id",
+            data_path=data_path
+        )
+        print(f"Существующие id: {ids}")
         id_ = input("Введите id: ")
         if id_.isdigit():
             note_found = False
@@ -95,6 +121,11 @@ def edit_note(
         else:
             print("Неверный формат id")
     elif find_by == "title":
+        titles = find_all_id_title(
+            by="title",
+            data_path=data_path
+        )
+        print(f"Существующие title: {titles}")
         title_ = input("Введите title: ")
         note_found = False
         for note in data["data"]:
@@ -122,13 +153,17 @@ def delete_note(
         data = json.load(file)
 
     if find_by == "id":
+        ids = find_all_id_title(
+            by="id",
+            data_path=data_path
+        )
+        print(f"Существующие id: {ids}")
         id_ = input("Введите id: ")
         if id_.isdigit():
             note_found = False
             for note in data["data"]:
                 if note.get("id") == int(id_):
                     note_found = True
-                    print(note)
                     data["data"].remove(note)
                     with open(data_path, "w", encoding="utf-8") as file:
                         json.dump(data, file, ensure_ascii=False, indent=4)
@@ -137,6 +172,11 @@ def delete_note(
         else:
             print("Неверный формат id")
     elif find_by == "title":
+        titles = find_all_id_title(
+            by="title",
+            data_path=data_path
+        )
+        print(f"Существующие title: {titles}")
         title_ = input("Введите title: ")
         note_found = False
         for note in data["data"]:
